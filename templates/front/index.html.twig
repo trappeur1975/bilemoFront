@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello FrontController!{% endblock %}
+
+{% block body %}
+
+    <h1>Bienvenue sur l'api frontend</h1>
+        {{ form_start(form) }}
+            {{ form_row(form.username) }}			
+            {{ form_row(form.password) }}
+
+            <button class="btn btn-primary">{{ button|default('Enregistrer') }}</button>
+        {{ form_end(form) }}
+
+{% endblock %}
