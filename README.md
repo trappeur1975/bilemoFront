@@ -5,4 +5,5 @@ commande pour excuter le serveur web de symfony :
 
 ----------------------infos project--------------------
 
-17/12/2021 : temporary backup 
+17/12/2021 : temporary backup
+20/12/2021 : authentification (token) end request list products

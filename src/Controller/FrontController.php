@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Form\CustomerType;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -18,7 +20,7 @@ class FrontController extends AbstractController
     /**
      * @Route("/", name="front")
      */
-    public function index(Request $request, SerializerInterface $serializer): Response
+    public function index(Request $request, SerializerInterface $serializer, HttpClientInterface $httpClient, LoggerInterface $logger): Response
     {
         $customer = new Customer();
 
@@ -28,55 +30,47 @@ class FrontController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $customer = $form->getData();
-            // dump($form->get('username')->getData());
-            // dump($customer);
+            $username = $form->get('username')->getData();
+            $password = $form->get('password')->getData();
 
-            $data = $serializer->serialize($customer, 'json');
-            dump($data);
+            try {
+                $response = $httpClient->request(
+                    'POST',
+                    'https://127.0.0.1:8000/api/login_check',
+                    [
+                        'json' => ['username' => $username, 'password' =>  $password]
+                        // 'json' => ['username' => 'compagny4@test.com', 'password' => 'compagny4']
+                    ]
+                );
+            } catch (\Symfony\Component\HttpClient\Exception\TransportException | \Exception | \Throwable $exception) {
+                die($exception->getMessage());
+            }
 
-            // return $this->redirectToRoute('apiconnect', ['customer' => $customer], Response::HTTP_SEE_OTHER);
+            $token = $response->toArray()['token'];
 
-            // $request = new HTTP_Request2();
-            // $request->setUrl('https://127.0.0.1:8000/api/login_check');
-            // $request->setMethod(HTTP_Request2::METHOD_POST);
-            // $request->setConfig(array(
-            //   'follow_redirects' => TRUE
-            // ));
-            // $request->setHeader(array(
-            //   'Content-Type' => 'application/json'
-            // ));
-            // $request->setBody('{
-            // \n    "username": "compagny4@test.com",
-            // \n    "password": "compagny4"
-            // \n}');
-            // try {
-            //   $response = $request->send();
-            //   if ($response->getStatus() == 200) {
-            //     echo $response->getBody();
-            //   }
-            //   else {
-            //     echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
-            //     $response->getReasonPhrase();
-            //   }
-            // }
+            // $customer->setUsername($username);
+            // $customer->setPassword($password);
+            // $customer->setToken($token);
+
+            // $entityManager = $this->getDoctrine()->getManager();
+            // $entityManager->persist($customer);
+            // $entityManager->flush();
 
 
+            $response2 = $httpClient->request(
+                'GET',
+                'https://127.0.0.1:8000/api/products',
+                [
+                    'auth_bearer' => $token,
+                ]
+            );
+
+            return $this->render('front/listProducts.html.twig', [
+                'products' => $response2->toArray(),
+            ]);
         }
 
         return $this->render('front/index.html.twig', [
-            // 'controller_name' => 'FrontController',
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * @Route("/apiconnect", name="apiconnect")
-     */
-    public function apiconnect(Request $request): Response
-    {
-        return $this->render('front/index.html.twig', [
-            // 'controller_name' => 'FrontController',
             'form' => $form->createView(),
         ]);
     }
