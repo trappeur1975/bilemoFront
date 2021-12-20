@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello FrontController!{% endblock %}
+
+{% block body %}
+
+    <h1>bienvenu sur la page request de votre api</h1>
+
+    <h2><a href="{{ path('listProducts') }}">listes des produits</a></h2>
+    <h2><a href="{{ path('listCustomers') }}">listes des customers</a></h2>
+      
+{% endblock %}

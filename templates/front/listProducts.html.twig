@@ -6,6 +6,8 @@
 
     <h1>voici la liste des products</h1>
 
+    <a href="{{ path('requestApi') }}">Retourner au menu des Request Api</a>
+
     <ul>
         {% for product in products%}
             <li>Id : {{product.id}}</li>
