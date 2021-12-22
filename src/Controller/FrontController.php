@@ -33,6 +33,7 @@ class FrontController extends AbstractController
                 $response = $httpClient->request(
                     'POST',
                     'https://127.0.0.1:8000/api/login_check',
+                    // 'https://127.0.0.1:7070/api/login_check',
                     [
                         'json' => ['username' => $username, 'password' =>  $password]
                     ]
@@ -58,6 +59,8 @@ class FrontController extends AbstractController
     {
         return $this->render('front/requestApi.html.twig', []);
     }
+
+    // -----------api simple------------------------
 
     /**
      * @Route("/listProducts", name="listProducts")
@@ -104,6 +107,47 @@ class FrontController extends AbstractController
 
         return $this->render('front/listCustomers.html.twig', [
             'customers' => $response->toArray(),
+        ]);
+    }
+
+    // -----------api platform------------------------
+    /**
+     * @Route("/listProductsApiplatform", name="listProductsApiplatform")
+     */
+    public function listProductsApiplatform(Request $request, HttpClientInterface $httpClient, SessionInterface $session): Response
+    {
+        $token = $session->get('token');
+
+        $response = $httpClient->request(
+            'GET',
+            'https://127.0.0.1:7070/api/products',
+            [
+                'auth_bearer' => $token,
+            ]
+        );
+
+        return $this->render('front/listProductsApiplatform.html.twig', [
+            'products' => $response->toArray()['hydra:member'],
+        ]);
+    }
+
+    /**
+     * @Route("/listCustomersApiplatform", name="listCustomersApiplatform")
+     */
+    public function listCustomersApiplatform(Request $request, HttpClientInterface $httpClient, SessionInterface $session): Response
+    {
+        $token = $session->get('token');
+
+        $response = $httpClient->request(
+            'GET',
+            'https://127.0.0.1:7070/api/customers',
+            [
+                'auth_bearer' => $token,
+            ]
+        );
+
+        return $this->render('front/listCustomersApiplatform.html.twig', [
+            'customers' => $response->toArray()['hydra:member'],
         ]);
     }
 }

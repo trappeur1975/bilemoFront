@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    <h1>voici la liste des customers via api SIMPLE</h1>
+    <h1>voici la liste des customers via api PLATFORM</h1>
 
     <a href="{{ path('requestApi') }}">Retourner au menu des Request Api</a>
 
@@ -15,7 +15,7 @@
             <li>lastName : {{customer.lastName}}</li>
             <li>email : {{customer.email}}</li>
             <li>adress : {{customer.adress}}</li>
-            <li>compagny : {{customer.compagny.name}}</li>
+            {# <li>compagny : {{customer.compagny.name}}</li> #}
             </br
         {%endfor%}
     </ul>
